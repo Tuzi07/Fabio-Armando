@@ -5,7 +5,7 @@ import time
 import pyscreenshot as ImageGrab
 import os
 
-from options import Screen, Noise
+from options import Screen, Noise, Clicker, Loot
 
 custom_config = r'-c tessedit_char_whitelist=0123456789 --psm 6'
 
@@ -97,11 +97,7 @@ def remove_noise(image):
                 image.putpixel(pixel, (255, 255, 255))
     return image
 
-screen_rect = [Screen.X, Screen.Y, Screen.WIDTH, Screen.HEIGHT]
-
-while True:
-    image = screenGrab(screen_rect)
-
+def process_image(image):
     for i in range(0, Screen.WIDTH):
         for j in range(0, Screen.HEIGHT):
             current_color = image.getpixel((i, j))
@@ -112,10 +108,29 @@ while True:
     #image.save(os.path.expanduser('~/Downloads/screen_grob.png'), 'PNG')
     image = remove_noise(image)
     #image.save(os.path.expanduser('~/Downloads/screen_grab.png'), 'PNG')
-    
-    text = pytesseract.image_to_string(image, config=custom_config)
 
-    text = text.strip()
-    if len(text) > 0:
-        print(text, end='\n\n')
+def is_valid_text(text):
+    return len(text.splitlines()) == 3
+
+def text_to_resources(text):
+    text = text.splitlines()
+    return (int(text[0].replace(" ", "")), int(text[1].replace(" ", "")), int(text[2].replace(" ", "")))
+
+screen_rect = [Screen.X, Screen.Y, Screen.WIDTH, Screen.HEIGHT]
+
+while True:
+    image = screenGrab(screen_rect)
+
+    process_image(image)
+    
+    text = pytesseract.image_to_string(image, config=custom_config).strip()
+
+    if is_valid_text(text):
+        #print(text, end='\n\n')
+        gold, elixir, d_elixir = text_to_resources(text)
+        if Loot.is_good_loot(gold, elixir, d_elixir):
+            Clicker.notify()
+        else:
+            Clicker.click_next()
+
     time.sleep(1)
