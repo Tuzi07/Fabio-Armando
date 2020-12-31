@@ -5,9 +5,7 @@ import time
 import pyscreenshot as ImageGrab
 import os
 
-COMPONENT_SIZE_RANGE = (40, 180)
-HEIGHT_RANGE = (11, 15)
-WIDTH_RANGE = (2, 14)
+from options import Screen, Noise
 
 custom_config = r'-c tessedit_char_whitelist=0123456789 --psm 6'
 
@@ -38,20 +36,6 @@ def paint_black(color):
     if color_in_range(color,d_elixir_color):
             paint_black = True
     return paint_black
-
-# Coordenadas para Teste
-x = 285
-y = 215
-width = 110
-height = 120
-
-# Coordenadas do Emulador
-#x = 82
-#y = 193
-#width = 220 - x
-#height = 335 - y
-
-screen_rect = [ x, y, width, height ]
 
 def remove_noise(image):
     parent = {}
@@ -118,16 +102,17 @@ def remove_noise(image):
     # paint white all too-small or too-big pixels, in any category
     for root in roots:
         wd, hg, sz = get_component_size(root)
-        if not in_range(hg, HEIGHT_RANGE) or not in_range(wd, WIDTH_RANGE) or not in_range(sz, COMPONENT_SIZE_RANGE):
+        if not in_range(hg, Noise.HEIGHT_RANGE) or not in_range(wd, Noise.WIDTH_RANGE) or not in_range(sz, Noise.COMPONENT_SIZE_RANGE):
             for pixel in component[root]:
                 image.putpixel(pixel, (255,255,255))
     return image
 
 while ( True ):
+    screen_rect = [ Screen.X, Screen.Y, Screen.WIDTH, Screen.HEIGHT ]
     image = screenGrab( screen_rect )        # Grab the area of the screen
 
-    for i in range(0,width):
-        for j in range(0,height):
+    for i in range(0,Screen.WIDTH):
+        for j in range(0,Screen.HEIGHT):
             current_color = image.getpixel( (i,j) )
             if (paint_black(current_color)):
                 image.putpixel( (i,j), (0,0,0))
