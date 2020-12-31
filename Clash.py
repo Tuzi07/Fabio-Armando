@@ -6,7 +6,7 @@ import pyscreenshot as ImageGrab
 
 custom_config = r'-c tessedit_char_whitelist=0123456789 --psm 6'
 
-def screenGrab( rect ):
+def screenGrab(rect):
     x, y, width, height = rect
     im = ImageGrab.grab(bbox=(x, y, x + width, y + height))
     return im
@@ -16,37 +16,40 @@ gold_color = (252, 255, 201)
 d_elixir_color = (243, 243, 243)
 
 def color_in_range(color, reference):
-    r,g,b = color
-    rr,gr,br = reference
+    r, g, b = color
+    rr, gr, br = reference
     color_range = 60
-    if rr - color_range <= r <= rr + color_range and gr - color_range <= g <= gr + color_range and br - color_range <= b <= br + color_range:
-        return True
-    else:
-        return False
+    return rr - color_range <= r <= rr + color_range and gr - color_range <= g <= gr + color_range and br - color_range <= b <= br + color_range
+
 
 def paint_black(color):
-    paint_black = False
-    if color_in_range(color,elixir_color):
-            paint_black = True
-    if color_in_range(color,gold_color):
-            paint_black = True
-    if color_in_range(color,d_elixir_color):
-            paint_black = True
-    return paint_black
+    return color_in_range(color, elixir_color) or color_in_range(color, gold_color) or color_in_range(color, d_elixir_color)
 
-# Coordenadas para Teste
+# Pedro: Coordenadas do Emulador
 x = 285
 y = 215
 width = 110
 height = 120
 
-# Coordenadas do Emulador
-#x = 82
-#y = 193
-#width = 220 - x
-#height = 335 - y
+# Pedro: Coordenadas para Teste
+# x = 82
+# y = 193
+# width = 220 - x
+# height = 335 - y
 
-screen_rect = [ x, y, width, height ]
+# Tuzi: Coordenadas para Teste
+# x = 123
+# y = 222
+# width = 150
+# height = 144
+
+# Tuzi: Coordenadas do Emulador
+# x = 93
+# y = 166
+# width = 147
+# height = 151
+
+screen_rect = [x, y, width, height]
 
 p = {}
 w = {}
@@ -55,10 +58,10 @@ def reset():
     global p, w
     p = {}
     w = {}
-    for i in range(0,width):
-        for j in range(0,height):
-            p[(i,j)] = (i,j)
-            w[(i,j)] = 1
+    for i in range(0, width):
+        for j in range(0, height):
+            p[(i, j)] = (i, j)
+            w[(i, j)] = 1
 
 adj = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
@@ -80,43 +83,50 @@ def union(a, b):
     w[a] += w[b]
     p[b] = a
 
-while ( True ):
-    image = screenGrab( screen_rect )        # Grab the area of the screen
+while True:
+    image = screenGrab(screen_rect)
 
     reset()
-    for i in range(0,width):
-        for j in range(0,height):
-            current_color = image.getpixel( (i,j) )
-            if (paint_black(current_color)):
-                image.putpixel( (i,j), (0,0,0))
+    for i in range(0, width):
+        for j in range(0, height):
+            current_color = image.getpixel((i, j))
+            if paint_black(current_color):
+                image.putpixel((i, j), (0, 0, 0))
             else:
-                image.putpixel( (i,j), (255,255,255))
-    for i in range(0,width):
-        for j in range(0,height):
+                image.putpixel((i, j), (255, 255, 255))
+    for i in range(0, width):
+        for j in range(0, height):
             color = image.getpixel((i, j))
             if color[0] == 0:
                 for k in range(len(adj)):
                     x, y = adj[k]
-                    if 0 <= i+x < width and 0 <= j+y < height: 
-                        n_color = image.getpixel((i+x, j+y))
+                    if 0 <= i + x < width and 0 <= j + y < height:
+                        n_color = image.getpixel((i + x, j + y))
                         if n_color[0] == 0:
-                            union((i, j), (i+x, j+y))
-    image.save( '/home/pedroteosousa/Downloads/screen_grob.png', 'PNG' )
+                            union((i, j), (i + x, j + y))
+
+    # image.save( '/home/pedroteosousa/Downloads/screen_grob.png', 'PNG' )
+    # image.save( '/home/tuzi/Downloads/new/screen_grob.png', 'PNG' )
+
     t = {}
-    for i in range(0,width):
-        for j in range(0,height):
+    for i in range(0, width):
+        for j in range(0, height):
             color = image.getpixel((i, j))
-            if color[0] == 0 and (w[find((i, j))] < 60 or w[find((i, j))] > 220):
-                image.putpixel( (i,j), (255,255,255))
-                t[find((i,j))] = w[find((i, j))]
+
+            if color[0] == 0 and (w[find((i, j))] < 60 or w[find((i, j))] > 220): # PEDRO
+            # if color[0] == 0 and (w[find((i, j))] < 60 or w[find((i, j))] > 331):  # TUZI
+                image.putpixel((i, j), (255, 255, 255))
+                t[find((i, j))] = w[find((i, j))]
     for a in t:
         pass
-        #print (t[a])
+        # print (t[a])
 
-    text = pytesseract.image_to_string( image, config=custom_config )   # OCR the image
-    image.save( '/home/pedroteosousa/Downloads/screen_grab.png', 'PNG' )
+    text = pytesseract.image_to_string(image, config=custom_config)
+
+    # image.save( '/home/pedroteosousa/Downloads/screen_grab.png', 'PNG' )
+    # image.save( '/home/tuzi/Downloads/new/screen_grab.png', 'PNG' )
 
     text = text.strip()
-    if ( len( text ) > 0 ):
-        print( text, end='\n\n' )
+    if len(text) > 0:
+        print(text, end='\n\n')
     time.sleep(1)
