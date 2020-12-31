@@ -3,6 +3,9 @@ import pytesseract
 from PIL import Image
 import time
 import pyscreenshot as ImageGrab
+import os
+
+from options import Screen, Noise
 
 custom_config = r'-c tessedit_char_whitelist=0123456789 --psm 6'
 
@@ -23,108 +26,100 @@ def color_in_range(color, reference):
 
 
 def paint_black(color):
-    return color_in_range(color, elixir_color) or color_in_range(color, gold_color) or color_in_range(color, d_elixir_color)
+    paint_black = False
+    if color_in_range(color,elixir_color):
+            paint_black = True
+    if color_in_range(color,gold_color):
+            paint_black = True
+    if color_in_range(color,d_elixir_color):
+            paint_black = True
+    return paint_black
 
-# Pedro: Coordenadas do Emulador
-x = 285
-y = 215
-width = 110
-height = 120
+def remove_noise(image):
+    parent = {}
+    component = {}
+    directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
-# Pedro: Coordenadas para Teste
-# x = 82
-# y = 193
-# width = 220 - x
-# height = 335 - y
+    width, height = image.size
+    for i in range(0,width):
+        for j in range(0,height):
+            parent[(i, j)] = (i, j)
+            component[(i, j)] = [(i, j)]
 
-# Tuzi: Coordenadas para Teste
-# x = 123
-# y = 222
-# width = 150
-# height = 144
+    def find(x):
+        if parent[x] == x:
+            return x
+        parent[x] = find(parent[x])
+        return parent[x]
 
-# Tuzi: Coordenadas do Emulador
-# x = 93
-# y = 166
-# width = 147
-# height = 151
+    def union(a, b):
+        a = find(a)
+        b = find(b)
+        if a == b:
+            return
+        if len(component[a]) < len(component[b]):
+            a, b = b, a
+        parent[b] = a
+        for pixel in component[b]:
+            component[a].append(pixel)
+        component[b] = []
 
-screen_rect = [x, y, width, height]
+    def get_component_size(pixel):
+        pixel = find(pixel)
+        comp = component[pixel]
+        minx, maxx = width, 0
+        miny, maxy = height, 0
+        for pix in comp:
+            minx = min(minx, pix[0])
+            maxx = max(maxx, pix[0])
+            miny = min(miny, pix[1])
+            maxy = max(maxy, pix[1])
+        return maxx - minx, maxy - miny, len(comp)
 
-p = {}
-w = {}
+    def in_range(value, test_range):
+        return test_range[0] <= value <= test_range[1]
 
-def reset():
-    global p, w
-    p = {}
-    w = {}
-    for i in range(0, width):
-        for j in range(0, height):
-            p[(i, j)] = (i, j)
-            w[(i, j)] = 1
-
-adj = [(1, 0), (0, 1), (-1, 0), (0, -1)]
-
-def find(x):
-    global p
-    if p[x] == x:
-        return x
-    p[x] = find(p[x])
-    return p[x]
-
-def union(a, b):
-    global p, w
-    a = find(a)
-    b = find(b)
-    if a == b:
-        return
-    if w[a] < w[b]:
-        a, b = b, a
-    w[a] += w[b]
-    p[b] = a
-
-while True:
-    image = screenGrab(screen_rect)
-
-    reset()
-    for i in range(0, width):
-        for j in range(0, height):
-            current_color = image.getpixel((i, j))
-            if paint_black(current_color):
-                image.putpixel((i, j), (0, 0, 0))
-            else:
-                image.putpixel((i, j), (255, 255, 255))
-    for i in range(0, width):
-        for j in range(0, height):
+    # create components looking at directions vector
+    for i in range(width):
+        for j in range(height):
             color = image.getpixel((i, j))
             if color[0] == 0:
-                for k in range(len(adj)):
-                    x, y = adj[k]
-                    if 0 <= i + x < width and 0 <= j + y < height:
-                        n_color = image.getpixel((i + x, j + y))
+                for k in range(len(directions)):
+                    x, y = directions[k]
+                    if 0 <= i+x < width and 0 <= j+y < height:
+                        n_color = image.getpixel((i+x, j+y))
                         if n_color[0] == 0:
-                            union((i, j), (i + x, j + y))
-
-    # image.save( '/home/pedroteosousa/Downloads/screen_grob.png', 'PNG' )
-    # image.save( '/home/tuzi/Downloads/new/screen_grob.png', 'PNG' )
-
-    t = {}
-    for i in range(0, width):
-        for j in range(0, height):
+                            union((i, j), (i+x, j+y))
+    # find a representative for each component
+    roots = set()
+    for i in range(width):
+        for j in range(height):
             color = image.getpixel((i, j))
+            if color[0] == 0:
+                roots.add(find((i, j)))
+    # paint white all too-small or too-big pixels, in any category
+    for root in roots:
+        wd, hg, sz = get_component_size(root)
+        if not in_range(hg, Noise.HEIGHT_RANGE) or not in_range(wd, Noise.WIDTH_RANGE) or not in_range(sz, Noise.COMPONENT_SIZE_RANGE):
+            for pixel in component[root]:
+                image.putpixel(pixel, (255,255,255))
+    return image
 
-            if color[0] == 0 and (w[find((i, j))] < 60 or w[find((i, j))] > 220): # PEDRO
-            # if color[0] == 0 and (w[find((i, j))] < 60 or w[find((i, j))] > 331):  # TUZI
-                image.putpixel((i, j), (255, 255, 255))
-                t[find((i, j))] = w[find((i, j))]
-    for a in t:
-        pass
-        # print (t[a])
+while ( True ):
+    screen_rect = [ Screen.X, Screen.Y, Screen.WIDTH, Screen.HEIGHT ]
+    image = screenGrab( screen_rect )        # Grab the area of the screen
 
-    text = pytesseract.image_to_string(image, config=custom_config)
-
-    # image.save( '/home/pedroteosousa/Downloads/screen_grab.png', 'PNG' )
-    # image.save( '/home/tuzi/Downloads/new/screen_grab.png', 'PNG' )
+    for i in range(0,Screen.WIDTH):
+        for j in range(0,Screen.HEIGHT):
+            current_color = image.getpixel( (i,j) )
+            if (paint_black(current_color)):
+                image.putpixel( (i,j), (0,0,0))
+            else:
+                image.putpixel( (i,j), (255,255,255))
+    image.save(os.path.expanduser('~/Downloads/screen_grob.png'), 'PNG')
+    image = remove_noise(image)
+    image.save(os.path.expanduser('~/Downloads/screen_grab.png'), 'PNG')
+    text = pytesseract.image_to_string( image, config=custom_config )   # OCR the image
 
     text = text.strip()
     if len(text) > 0:
