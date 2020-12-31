@@ -24,16 +24,8 @@ def color_in_range(color, reference):
     color_range = 60
     return rr - color_range <= r <= rr + color_range and gr - color_range <= g <= gr + color_range and br - color_range <= b <= br + color_range
 
-
 def paint_black(color):
-    paint_black = False
-    if color_in_range(color,elixir_color):
-            paint_black = True
-    if color_in_range(color,gold_color):
-            paint_black = True
-    if color_in_range(color,d_elixir_color):
-            paint_black = True
-    return paint_black
+    return color_in_range(color, elixir_color) or color_in_range(color, gold_color) or color_in_range(color, d_elixir_color)
 
 def remove_noise(image):
     parent = {}
@@ -41,8 +33,8 @@ def remove_noise(image):
     directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
     width, height = image.size
-    for i in range(0,width):
-        for j in range(0,height):
+    for i in range(0, width):
+        for j in range(0, height):
             parent[(i, j)] = (i, j)
             component[(i, j)] = [(i, j)]
 
@@ -102,24 +94,26 @@ def remove_noise(image):
         wd, hg, sz = get_component_size(root)
         if not in_range(hg, Noise.HEIGHT_RANGE) or not in_range(wd, Noise.WIDTH_RANGE) or not in_range(sz, Noise.COMPONENT_SIZE_RANGE):
             for pixel in component[root]:
-                image.putpixel(pixel, (255,255,255))
+                image.putpixel(pixel, (255, 255, 255))
     return image
 
-while ( True ):
-    screen_rect = [ Screen.X, Screen.Y, Screen.WIDTH, Screen.HEIGHT ]
-    image = screenGrab( screen_rect )        # Grab the area of the screen
+screen_rect = [Screen.X, Screen.Y, Screen.WIDTH, Screen.HEIGHT]
 
-    for i in range(0,Screen.WIDTH):
-        for j in range(0,Screen.HEIGHT):
-            current_color = image.getpixel( (i,j) )
+while True:
+    image = screenGrab(screen_rect)
+
+    for i in range(0, Screen.WIDTH):
+        for j in range(0, Screen.HEIGHT):
+            current_color = image.getpixel((i, j))
             if (paint_black(current_color)):
-                image.putpixel( (i,j), (0,0,0))
+                image.putpixel((i, j), (0, 0, 0))
             else:
-                image.putpixel( (i,j), (255,255,255))
-    image.save(os.path.expanduser('~/Downloads/screen_grob.png'), 'PNG')
+                image.putpixel((i, j), (255, 255, 255))
+    #image.save(os.path.expanduser('~/Downloads/screen_grob.png'), 'PNG')
     image = remove_noise(image)
-    image.save(os.path.expanduser('~/Downloads/screen_grab.png'), 'PNG')
-    text = pytesseract.image_to_string( image, config=custom_config )   # OCR the image
+    #image.save(os.path.expanduser('~/Downloads/screen_grab.png'), 'PNG')
+    
+    text = pytesseract.image_to_string(image, config=custom_config)
 
     text = text.strip()
     if len(text) > 0:
