@@ -9,7 +9,7 @@ from options import Screen, Noise
 
 custom_config = r'-c tessedit_char_whitelist=0123456789 --psm 6'
 
-def screenGrab( rect ):
+def screenGrab(rect):
     x, y, width, height = rect
     im = ImageGrab.grab(bbox=(x, y, x + width, y + height))
     return im
@@ -19,13 +19,11 @@ gold_color = (252, 255, 201)
 d_elixir_color = (243, 243, 243)
 
 def color_in_range(color, reference):
-    r,g,b = color
-    rr,gr,br = reference
+    r, g, b = color
+    rr, gr, br = reference
     color_range = 60
-    if rr - color_range <= r <= rr + color_range and gr - color_range <= g <= gr + color_range and br - color_range <= b <= br + color_range:
-        return True
-    else:
-        return False
+    return rr - color_range <= r <= rr + color_range and gr - color_range <= g <= gr + color_range and br - color_range <= b <= br + color_range
+
 
 def paint_black(color):
     paint_black = False
@@ -124,6 +122,6 @@ while ( True ):
     text = pytesseract.image_to_string( image, config=custom_config )   # OCR the image
 
     text = text.strip()
-    if ( len( text ) > 0 ):
-        print( text, end='\n\n' )
+    if len(text) > 0:
+        print(text, end='\n\n')
     time.sleep(1)
