@@ -109,7 +109,20 @@ def process_image(image):
     image = remove_noise(image)
     #image.save(os.path.expanduser('~/Downloads/screen_grab.png'), 'PNG')
 
+def is_valid_number(text):
+    sets = text.split(' ')
+    for i in range(1, len(sets)):
+        if len(sets[i]) != 3:
+            return False
+    if len(sets[0]) > 3:
+        return False
+    return True
+
 def is_valid_text(text):
+    lines = text.splitlines()
+    for line in lines:
+        if not is_valid_number(line):
+            return False
     return len(text.splitlines()) == 3
 
 def text_to_resources(text):
@@ -118,19 +131,31 @@ def text_to_resources(text):
 
 screen_rect = [Screen.X, Screen.Y, Screen.WIDTH, Screen.HEIGHT]
 
-while True:
+# returns two parameters, first is an array [gold, elixir, dark_elixir]
+# and the second tells if the first one is valid or not
+def get_loot(retries = 3):
+    if retries == 0:
+        return [], False
     image = screenGrab(screen_rect)
-
     process_image(image)
-    
     text = pytesseract.image_to_string(image, config=custom_config).strip()
-
+    #print(text, end='\n\n')
     if is_valid_text(text):
-        #print(text, end='\n\n')
-        gold, elixir, d_elixir = text_to_resources(text)
+        return text_to_resources(text), True
+    else:
+        time.sleep(1)
+        if len(text) > 0:
+            retries -= 1 # don't use a retry if text is empty
+        return get_loot(retries)
+
+while True:
+    loot, valid = get_loot()
+    if valid:
+        gold, elixir, d_elixir = loot
         if Loot.is_good_loot(gold, elixir, d_elixir):
             Clicker.notify()
         else:
             Clicker.click_next()
-
+    else:
+        Clicker.click_next()
     time.sleep(1)
