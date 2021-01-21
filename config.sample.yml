@@ -1,0 +1,17 @@
+# config files needs to be something like this, but named config.yml
+player: pedro
+notification:
+  message: 'BIRL'
+noise:
+  area: [40, 180]
+  height: [11, 18]
+  width: [2, 18]
+clash:
+  loot:
+    rect: [68, 99, 134, 110]
+    good:
+      pedro: 'gold > 800000 and elixir > 800000'
+      rusharlison: 'gold > 600000 and elixir > 600000'
+      pimento: 'gold > 500000 and elixir > 500000'
+  locations:
+    next_button: [1230, 550]
