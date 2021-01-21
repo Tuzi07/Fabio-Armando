@@ -18,7 +18,9 @@ def click(location):
   pyautogui.moveTo(x, y)
 
 NEXT_BUTTON = config.get()['screen']['next_button']
+MAX_RETRIES = 3
 
+retries = MAX_RETRIES
 while True:
   try:
     loot = recognizer.get_loot()
@@ -30,5 +32,10 @@ while True:
       break
     else:
       click(NEXT_BUTTON)
-  except:
+    retries = MAX_RETRIES
+  except Exception as error:
+    retries -= 1
+    if retries == 0:
+      retries = MAX_RETRIES
+      click(NEXT_BUTTON)
     time.sleep(1)
