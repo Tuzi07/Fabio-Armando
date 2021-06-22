@@ -2,16 +2,13 @@
 player: pedro
 notification:
   message: 'BIRL'
-noise:
-  area: [40, 180]
-  height: [11, 18]
-  width: [2, 18]
+screen:
+  gold:        [67, 100, 132, 22]
+  elixir:      [67, 140, 132, 22]
+  dark_elixir: [67, 180, 132, 22]
+  next_button: [1230, 550]
 clash:
   loot:
-    rect: [68, 99, 134, 110]
-    good:
-      pedro: 'gold > 800000 and elixir > 800000'
-      rusharlison: 'gold > 600000 and elixir > 600000'
-      pimento: 'gold > 500000 and elixir > 500000'
-  locations:
-    next_button: [1230, 550]
+    pedro:       'gold > 800000 and elixir > 800000'
+    rusharlison: 'gold > 600000 and elixir > 600000'
+    pimento:     'gold > 500000 and elixir > 500000'
