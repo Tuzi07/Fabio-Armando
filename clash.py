@@ -6,6 +6,7 @@ engine = pyttsx3.init()
 
 import config
 import recognizer
+import eagle
 
 def notify(loot):
   notification = config.get()['notification']
@@ -25,7 +26,8 @@ while True:
   try:
     loot = recognizer.get_loot()
     gold, elixir, dark_elixir = loot
-    print(gold, elixir, dark_elixir)
+    unloaded = eagle.is_unloaded()
+    print(gold, elixir, dark_elixir, unloaded)
     player = config.get()['player']
     if eval(config.get()['clash']['loot'][player]):
       notify(loot)
