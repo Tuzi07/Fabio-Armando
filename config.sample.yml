@@ -2,6 +2,7 @@
 player: pedro
 notification:
   message: 'BIRL'
+scale: 0.5
 screen:
   gold:        [67, 100, 132, 22]
   elixir:      [67, 140, 132, 22]
