@@ -41,4 +41,6 @@ After you check that the emulator works, you can ditch `android-studio` and run 
 
 There are a few important pixels on your screen that Fábio needs to know before he can work. Those are the boxes where the gold, elixir and dark elixir quantities are shown and the next button. You can find these values by using `xdotool getmouselocation`.
 
-For the eagle recognition to work, you also need to define a scale. There is no easy way to do this. For now, you need to actually open the `eagle.py` file and program something to look for the best match yourself, and use this number.
+For the eagle recognition to work, you also need to define a scale. To do this, place a guess on the config file (`0.5` works well for a 1080p screen) and save an image of a base with an eagle (loaded or unloaded) as `base.png`. Run `python eagle.py` and wait for the program to find the best scale and use this value on the config file.
+
+Remember to always have a consistent zoom when using the program, fully zoomed out works best for consistency.
