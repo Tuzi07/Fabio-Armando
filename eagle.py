@@ -6,7 +6,7 @@ import os
 from PIL import Image
 import pyscreenshot as ImageGrab
 
-import config
+from config import Eagle
 
 def search(image_path, structure_path, scale):
     template = cv2.imread(structure_path)
@@ -45,7 +45,7 @@ def is_unloaded():
     image_path = "base.png"
     ImageGrab.grab().save(image_path)
 
-    scale = config.get()['scale']
+    scale = Eagle.scale
     THRESHOLD = 0.6
     best_fit_loaded = find_best_fit(image_path, 'eagle', scale)
     best_fit_unloaded = find_best_fit(image_path, 'eagle_unloaded', scale)
@@ -55,7 +55,7 @@ def is_unloaded():
 def find_scale():
     image_path = "base.png"
 
-    config_scale = config.get()['scale']
+    config_scale = Eagle.scale
     print('finding best scale based on {}'.format(config_scale))
 
     best_fit = 0
