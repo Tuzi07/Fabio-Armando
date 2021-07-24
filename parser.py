@@ -20,11 +20,10 @@ def color_in_range(color, reference):
 
 def should_paint_black(color):
   for loot_color in [ELIXIR_COLOR, GOLD_COLOR, DARK_ELIXIR_COLOR]:
-    if color_in_range(color, loot_color):
-      return True
+    if color_in_range(color, loot_color): return True
   return False
 
-def remove_noise(image):
+def remove_noise(image, noise_parameters):
   parent = {}
   component = {}
   directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
@@ -53,14 +52,20 @@ def remove_noise(image):
       component[a].append(pixel)
     component[b] = []
 
-  def get_component_height(pixel):
+  def get_component_sizes(pixel):
     pixel = find(pixel)
     comp = component[pixel]
+    minx, maxx = width, 0
     miny, maxy = height, 0
     for pix in comp:
+      minx = min(minx, pix[0])
+      maxx = max(maxx, pix[0])
       miny = min(miny, pix[1])
       maxy = max(maxy, pix[1])
-    return maxy - miny
+    return maxx - minx, maxy - miny, len(comp)
+
+  def in_range(value, test_range):
+    return test_range[0] <= value <= test_range[1]
 
   # create components looking at directions vector
   for i in range(width):
@@ -73,6 +78,7 @@ def remove_noise(image):
             n_color = image.getpixel((i+x, j+y))
             if n_color[0] == 0:
               union((i, j), (i+x, j+y))
+
   # find a representative for each component
   roots = set()
   for i in range(width):
@@ -80,16 +86,27 @@ def remove_noise(image):
       color = image.getpixel((i, j))
       if color[0] == 0:
         roots.add(find((i, j)))
-  # paint white all components that are too small
-  HEIGHT_THRESHOLD = 0.5
-  for root in roots:
-    relative_height = get_component_height(root) / height
-    if relative_height < HEIGHT_THRESHOLD:
-      for pixel in component[root]:
-        image.putpixel(pixel, (255, 255, 255))
+
+  # paint white all components that are too small or too big
+  if noise_parameters == None:
+    HEIGHT_THRESHOLD = 0.5
+    for root in roots:
+      _, component_height, _ = get_component_sizes(root)
+      relative_height = component_height / height
+      if relative_height < HEIGHT_THRESHOLD:
+        for pixel in component[root]:
+          image.putpixel(pixel, (255, 255, 255))
+  else:
+    for root in roots:
+      wd, hg, sz = get_component_sizes(root)
+      if not in_range(hg, noise_parameters.height_range) or not in_range(wd, noise_parameters.width_range) or not in_range(sz, noise_parameters.component_size_range):
+        for pixel in component[root]:
+          image.putpixel(pixel, (255, 255, 255))
+
   return image
 
-def process_image(image):
+def processed_image(rect, noise_parameters = None):
+  image = screen_grab(rect)
   width, height = image.size
   for i in range(width):
     for j in range(height):
@@ -98,10 +115,5 @@ def process_image(image):
         image.putpixel((i, j), (0, 0, 0))
       else:
         image.putpixel((i, j), (255, 255, 255))
-  image = remove_noise(image)
+  image = remove_noise(image, noise_parameters)
   return image
-
-def get_images():
-  loots = ['gold', 'elixir', 'dark_elixir']
-  rects = [config.get()['screen'][loot] for loot in loots]
-  return [process_image(screen_grab(rect)) for rect in rects]
