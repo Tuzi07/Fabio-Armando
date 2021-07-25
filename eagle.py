@@ -47,10 +47,13 @@ def is_unloaded():
 
     scale = Eagle.scale
     THRESHOLD = 0.6
-    best_fit_loaded = find_best_fit(image_path, 'eagle', scale)
-    best_fit_unloaded = find_best_fit(image_path, 'eagle_unloaded', scale)
 
-    return best_fit_unloaded > THRESHOLD and best_fit_unloaded > best_fit_loaded
+    best_fit_unloaded = find_best_fit(image_path, 'eagle_unloaded', scale)
+    if best_fit_unloaded < THRESHOLD:
+      return False
+
+    best_fit_loaded = find_best_fit(image_path, 'eagle', scale)
+    return best_fit_unloaded > best_fit_loaded
 
 def find_scale():
     image_path = "base.png"
