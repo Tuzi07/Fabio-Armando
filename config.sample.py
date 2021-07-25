@@ -5,6 +5,7 @@ import recognizer
 
 message = "BIRL!"
 loot_type = "default"
+max_retries = 3
 
 # runs once when program starts, can be used to change loot_type
 def setup():

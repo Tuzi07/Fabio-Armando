@@ -4,11 +4,9 @@ from config import Screen, Loot
 import config
 import utils
 
-MAX_RETRIES = 3
-
 config.setup()
 
-retries = MAX_RETRIES
+available_retries = config.max_retries
 while True:
   try:
     loot = Loot.recognize()
@@ -16,10 +14,12 @@ while True:
       Loot.notify(loot)
     else:
       utils.click(Screen.next_button)
-    retries = MAX_RETRIES
+    available_retries = config.max_retries
   except Exception as error:
-    retries -= 1
-    if retries == 0:
-      retries = MAX_RETRIES
+    if available_retries == 0:
+      continue
+    available_retries -= 1
+    if available_retries == 0:
+      available_retries = config.max_retries
       utils.click(Screen.next_button)
     time.sleep(1)
