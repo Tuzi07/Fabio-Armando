@@ -6,7 +6,12 @@ import os
 from PIL import Image
 import pyscreenshot as ImageGrab
 
-from config import Eagle
+from config import Eagle, Screen
+import utils
+
+IMAGE_PATH = "base.png"
+THRESHOLD = 0.6
+ASSETS_LOCATION = "assets"
 
 def search(image_path, structure_path, scale):
     template = cv2.imread(structure_path)
@@ -30,8 +35,6 @@ def search(image_path, structure_path, scale):
 
     return res, (w, h)
 
-ASSETS_LOCATION = "assets"
-
 def find_best_fit(image_path, structure_name, scale):
     base_path = os.path.join(ASSETS_LOCATION, structure_name)
     best_fit = 0
@@ -42,21 +45,19 @@ def find_best_fit(image_path, structure_name, scale):
     return best_fit
 
 def is_unloaded():
-    image_path = "base.png"
-    ImageGrab.grab().save(image_path)
+    utils.screen_grab(Screen.screen).save(IMAGE_PATH)
 
-    scale = Eagle.scale
-    THRESHOLD = 0.6
+    base_path = os.path.join(ASSETS_LOCATION, 'eagle_unloaded')
 
-    best_fit_unloaded = find_best_fit(image_path, 'eagle_unloaded', scale)
-    if best_fit_unloaded < THRESHOLD:
-      return False
-
-    best_fit_loaded = find_best_fit(image_path, 'eagle', scale)
-    return best_fit_unloaded > best_fit_loaded
+    for path in os.listdir(base_path):
+        structure_path = os.path.join(base_path, path)
+        res, size = search(IMAGE_PATH, structure_path, Eagle.scale)
+        if np.max(res) > THRESHOLD:
+            return True
+    return False
 
 def find_scale():
-    image_path = "base.png"
+    utils.screen_grab(Screen.screen).save(IMAGE_PATH)
 
     config_scale = Eagle.scale
     print('finding best scale based on {}'.format(config_scale))
@@ -65,8 +66,8 @@ def find_scale():
     unloaded = False
     best_scale = 0
     for scale in np.linspace(0.75 * config_scale, 1.5 * config_scale, 50)[::-1]:
-        best_fit_loaded = find_best_fit(image_path, 'eagle', scale)
-        best_fit_unloaded = find_best_fit(image_path, 'eagle_unloaded', scale)
+        best_fit_loaded = find_best_fit(IMAGE_PATH, 'eagle', scale)
+        best_fit_unloaded = find_best_fit(IMAGE_PATH, 'eagle_unloaded', scale)
         if best_fit_loaded > best_fit:
             best_fit = best_fit_loaded
             unloaded = False

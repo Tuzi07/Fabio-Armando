@@ -2,7 +2,6 @@ import pyttsx3
 engine = pyttsx3.init()
 
 import recognizer
-import eagle
 
 message = "BIRL!"
 loot_type = "default"
@@ -19,6 +18,9 @@ class Loot:
       return gold > 500000 or elixir > 500000 or dark_elixir > 4000
     if loot_type == "dark_elixir":
       return dark_elixir > 8000
+    if loot_type == "eagle_unloaded":
+      import eagle
+      return gold > 500000 and elixir > 500000 and dark_elixir > 4000 and eagle.is_unloaded()
 
   def notify(loot):
     engine.say(message)
@@ -41,6 +43,7 @@ class Screen:
   elixir      = (94, 194, 190, 30)
   dark_elixir = (94, 250, 190, 30)
   loot        = (93, 135, 167, 151)
+  screen      = (0, 0, 1920, 1080)
 
 class Noise:
   width_range          = (3, 23)

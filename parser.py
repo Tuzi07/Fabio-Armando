@@ -2,11 +2,7 @@ from PIL import Image
 import pyscreenshot as ImageGrab
 
 import config
-
-def screen_grab(rect):
-  x, y, width, height = rect
-  im = ImageGrab.grab(bbox=(x, y, x + width, y + height))
-  return im
+import utils
 
 ELIXIR_COLOR = (255, 225, 253)
 GOLD_COLOR = (252, 255, 201)
@@ -106,7 +102,7 @@ def remove_noise(image, noise_parameters):
   return image
 
 def processed_image(rect, noise_parameters = None):
-  image = screen_grab(rect)
+  image = utils.screen_grab(rect)
   width, height = image.size
   for i in range(width):
     for j in range(height):
