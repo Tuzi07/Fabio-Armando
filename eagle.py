@@ -10,7 +10,6 @@ from config import Eagle, Screen
 import utils
 
 IMAGE_PATH = "base.png"
-THRESHOLD = 0.6
 ASSETS_LOCATION = "assets"
 
 def search(image_path, structure_path, scale):
@@ -49,11 +48,17 @@ def is_unloaded():
 
     base_path = os.path.join(ASSETS_LOCATION, 'eagle_unloaded')
 
+    best_fit = 0
+
     for path in os.listdir(base_path):
         structure_path = os.path.join(base_path, path)
         res, size = search(IMAGE_PATH, structure_path, Eagle.scale)
-        if np.max(res) > THRESHOLD:
+        if np.max(res) > best_fit:
+            best_fit = np.max(res)
+        if np.max(res) > Eagle.threshold:
+            print('np.max(res) =', np.max(res))
             return True
+    print('np.max(res) =', best_fit)
     return False
 
 def find_scale():
