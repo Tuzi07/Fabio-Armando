@@ -12,7 +12,9 @@ Add your user to the `kvm` group and restart your machine.
 sudo apt-get install tesseract-ocr libleptonica-dev libtesseract-dev
 ```
 
-Move `eng.traineddata` to the `tessdata` folder (normally located at `/usr/share/tesseract-ocr/4.00/tessdata`)
+Move `eng.traineddata` to the `tessdata` folder (normally located at `/usr/share/tesseract-ocr/4.00/tessdata`, `C:\Program Files\Tesseract-OCR\tessdata` on Windows)
+
+On Windows, install Tesseract running the latest installer. It can be found [here](https://github.com/UB-Mannheim/tesseract/wiki).
 
 Next, install the following packages using `pip`
 

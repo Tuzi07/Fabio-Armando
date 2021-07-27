@@ -1,7 +1,12 @@
-from tesserocr import PyTessBaseAPI, RIL, PSM, iterate_level
 import pytesseract
 
-from parser import processed_image
+import platform
+if platform.system() == 'Windows':
+  pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+else:
+  from tesserocr import PyTessBaseAPI, RIL, PSM, iterate_level
+
+from imageprocessor import processed_image
 
 def single_line_image_to_int(image, threshold = 75):
   tokens = []
