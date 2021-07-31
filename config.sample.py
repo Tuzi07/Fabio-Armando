@@ -37,6 +37,7 @@ class Loot:
 
 class Eagle:
   scale = 0.5045454545454546
+  threshold = 0.6
 
 class Screen:
   next_button = (1800, 800)
