@@ -39,6 +39,8 @@ After you check that the emulator works, you can ditch `android-studio` and run 
 
 ## Config File
 
+You need a `config.py` file. You can copy the contents of any sample on `/samples`.
+
 There are a few important pixels on your screen that Fábio needs to know before he can work. Those are the boxes where the gold, elixir and dark elixir quantities are shown and the next button. You can find these values by running `while true; do xdotool getmouselocation; sleep 0.2; clear; done;`.
 
 For the eagle recognition to work, you also need to define a scale. To do this, place a guess on the config file (`0.5` works well for a 1080p screen) and save an image of a base with an eagle (loaded or unloaded) as `base.png`. Run `python eagle.py` and wait for the program to find the best scale and use this value on the config file.
