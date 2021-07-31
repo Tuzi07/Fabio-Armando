@@ -6,7 +6,7 @@ import os
 from PIL import Image
 import pyscreenshot as ImageGrab
 
-from config import Eagle, Screen
+from config import Eagle, Screen, verbose
 import utils
 
 IMAGE_PATH = "base.png"
@@ -56,9 +56,11 @@ def is_unloaded():
         if np.max(res) > best_fit:
             best_fit = np.max(res)
         if np.max(res) > Eagle.threshold:
-            print('np.max(res) =', np.max(res))
+            if verbose:
+                print('np.max(res) =', np.max(res))
             return True
-    print('np.max(res) =', best_fit)
+    if verbose:
+        print('best_fit =', best_fit)
     return False
 
 def find_scale():

@@ -3,6 +3,7 @@ engine = pyttsx3.init()
 
 import recognizer
 
+verbose = False
 message = "BIRL!"
 loot_type = "default"
 max_retries = 3
