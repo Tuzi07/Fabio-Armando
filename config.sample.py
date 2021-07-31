@@ -3,6 +3,7 @@ engine = pyttsx3.init()
 
 import recognizer
 
+verbose = False
 message = "BIRL!"
 loot_type = "default"
 max_retries = 3
@@ -37,6 +38,7 @@ class Loot:
 
 class Eagle:
   scale = 0.5045454545454546
+  threshold = 0.6
 
 class Screen:
   next_button = (1800, 800)
