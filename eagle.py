@@ -12,6 +12,7 @@ import utils
 IMAGE_PATH = "base.png"
 ASSETS_LOCATION = "assets"
 
+
 def search(image_path, structure_path, scale):
     template = cv2.imread(structure_path)
     image_o = cv2.imread(image_path)
@@ -19,7 +20,7 @@ def search(image_path, structure_path, scale):
     template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
     image = cv2.cvtColor(image_o, cv2.COLOR_BGR2GRAY)
 
-    resized = imutils.resize(template, width = int(template.shape[1] * scale))
+    resized = imutils.resize(template, width=int(template.shape[1] * scale))
 
     w, h = resized.shape[::-1]
     a, b = image.shape[::-1]
@@ -27,12 +28,13 @@ def search(image_path, structure_path, scale):
     if w > a or h > b:
         return 0, None, None
     try:
-        res = cv2.matchTemplate(image,resized,cv2.TM_CCOEFF_NORMED, x, resized)
+        res = cv2.matchTemplate(image, resized, cv2.TM_CCOEFF_NORMED, x, resized)
     except Exception as err:
         print(err)
         return
 
     return res, (w, h)
+
 
 def find_best_fit(image_path, structure_name, scale):
     base_path = os.path.join(ASSETS_LOCATION, structure_name)
@@ -43,10 +45,11 @@ def find_best_fit(image_path, structure_name, scale):
         best_fit = max(best_fit, np.max(res))
     return best_fit
 
+
 def is_unloaded():
     utils.screen_grab(Screen.screen).save(IMAGE_PATH)
 
-    base_path = os.path.join(ASSETS_LOCATION, 'eagle_unloaded')
+    base_path = os.path.join(ASSETS_LOCATION, "eagle_unloaded")
 
     best_fit = 0
 
@@ -57,24 +60,25 @@ def is_unloaded():
             best_fit = np.max(res)
         if np.max(res) > Eagle.threshold:
             if verbose:
-                print('np.max(res) =', np.max(res))
+                print("np.max(res) =", np.max(res))
             return True
     if verbose:
-        print('best_fit =', best_fit)
+        print("best_fit =", best_fit)
     return False
+
 
 def find_scale():
     utils.screen_grab(Screen.screen).save(IMAGE_PATH)
 
     config_scale = Eagle.scale
-    print('finding best scale based on {}'.format(config_scale))
+    print("finding best scale based on {}".format(config_scale))
 
     best_fit = 0
     unloaded = False
     best_scale = 0
     for scale in np.linspace(0.75 * config_scale, 1.5 * config_scale, 50)[::-1]:
-        best_fit_loaded = find_best_fit(IMAGE_PATH, 'eagle', scale)
-        best_fit_unloaded = find_best_fit(IMAGE_PATH, 'eagle_unloaded', scale)
+        best_fit_loaded = find_best_fit(IMAGE_PATH, "eagle", scale)
+        best_fit_unloaded = find_best_fit(IMAGE_PATH, "eagle_unloaded", scale)
         if best_fit_loaded > best_fit:
             best_fit = best_fit_loaded
             unloaded = False
@@ -83,10 +87,13 @@ def find_scale():
             best_fit = best_fit_unloaded
             unloaded = True
             best_scale = scale
-        print('scale = {}'.format(scale))
-        print('best_fit = {}, {}'.format(best_fit, 'unloaded' if unloaded else 'loaded'))
-    print('best scale = {}'.format(best_scale))
-    print('best match = {}, {}'.format(best_fit, 'unloaded' if unloaded else 'loaded'))
+        print("scale = {}".format(scale))
+        print(
+            "best_fit = {}, {}".format(best_fit, "unloaded" if unloaded else "loaded")
+        )
+    print("best scale = {}".format(best_scale))
+    print("best match = {}, {}".format(best_fit, "unloaded" if unloaded else "loaded"))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     find_scale()
