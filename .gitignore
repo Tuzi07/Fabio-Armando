@@ -1,4 +1,6 @@
 __pycache__/
-config.py
-base.png
+main.py
+screen_config.py
+database/
+recognizer_fails/
 .vscode/
