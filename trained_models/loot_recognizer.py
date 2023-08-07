@@ -20,6 +20,7 @@ def recognize_loot():
     # image.save("grab.png")
     processed_image = imageprocessor.processed_image(image)
     # processed_image.save("grob.png")
+    # processed_image.show()
     loot = loot_from_image(processed_image)
     return loot
 
@@ -89,4 +90,7 @@ def single_line_image_to_str(image, threshold=75):
             confidence = r.Confidence(level)
             if symbol and confidence >= threshold:
                 tokens.append(symbol)
-    return "".join(tokens)
+    joined_tokens = "".join(tokens)
+    # print("Recognized:", joined_tokens)
+    # image.show()
+    return joined_tokens

@@ -1,27 +1,41 @@
 import datetime
 import screen_config
-from PIL import ImageGrab
-
-
-def loot_image():
-    return image_from_rect(screen_config.loot)
-
-
-def image_from_rect(rect):
-    x, y, width, height = rect
-    return ImageGrab.grab(bbox=(x, y, x + width, y + height), all_screens=True)
-
-
-def loot_images():
-    return [
-        image_from_rect(screen_config.gold),
-        image_from_rect(screen_config.elixir),
-        image_from_rect(screen_config.dark_elixir),
-    ]
+from PIL import Image
+import subprocess
 
 
 def screen_image():
-    return image_from_rect(screen_config.screen)
+    capture_screen_cmd = ["adb", "shell", "screencap", "-p", "/sdcard/screenshot.png"]
+    subprocess.run(capture_screen_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    pull_screen_cmd = ["adb", "pull", "/sdcard/screenshot.png"]
+    subprocess.run(pull_screen_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    image = Image.open("screenshot.png")
+    image = image.convert("RGB")
+
+    return image
+
+
+def rect_from_image(rect, image):
+    x, y, width, height = rect
+    cropped_image = image.crop((x, y, x + width, y + height))
+    return cropped_image
+
+
+def loot_image():
+    image = screen_image()
+    return rect_from_image(screen_config.loot, image)
+
+
+def loot_images():
+    image = screen_image()
+
+    return [
+        rect_from_image(screen_config.gold, image),
+        rect_from_image(screen_config.elixir, image),
+        rect_from_image(screen_config.dark_elixir, image),
+    ]
 
 
 def print_and_save_on(folder):
