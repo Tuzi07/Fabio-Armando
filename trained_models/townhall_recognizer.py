@@ -31,11 +31,15 @@ def is_townhall_snipable():
                 xmin = row["xmin"]
                 ymax = row["ymax"]
                 ymin = row["ymin"]
-                x_center = (xmax + xmin) / 2 / 1920
-                y_center = (ymax + ymin) / 2 / 1080
+                # x_center = (xmax + xmin) / 2 / 1920
+                # y_center = (ymax + ymin) / 2 / 1080
+                x_center = (xmax + xmin) / 2 / 3120
+                y_center = (ymax + ymin) / 2 / 1440
                 distance = distance_from_center(x_center, y_center)
 
-                if distance > 0.15:
+                if distance > 0.19:
+                    print(distance)
+                # if distance > 0.15:
                     return True
 
     return False

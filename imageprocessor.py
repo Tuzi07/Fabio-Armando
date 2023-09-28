@@ -7,7 +7,9 @@ DARK_ELIXIR_COLOR = (243, 243, 243)
 
 def processed_image(image):
     image = black_text_white_background(image)
+    # image.show()
     image = remove_noise(image)
+    # image.show()
     return image
 
 
@@ -107,6 +109,7 @@ def remove_noise(image):
 
     for root in roots:
         wd, hg, sz = get_component_sizes(root)
+        # print(wd, hg, sz)
         if (
             not in_range(hg, screen_config.noise_height_range)
             or not in_range(wd, screen_config.noise_width_range)
