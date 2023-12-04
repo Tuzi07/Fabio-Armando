@@ -8,7 +8,7 @@ if platform.system() == "Windows":
     pytesseract.pytesseract.tesseract_cmd = (
         "C:/Program Files/Tesseract-OCR/tesseract.exe"
     )
-from tesserocr import PyTessBaseAPI, RIL, PSM, iterate_level
+# from tesserocr import PyTessBaseAPI, RIL, PSM, iterate_level
 
 tesseract_path = "./"
 if platform.system() == "Windows":
@@ -61,36 +61,36 @@ def text_to_resources(text):
     return [int(t.replace(" ", "")) for t in text.splitlines()]
 
 
-def recognize_loot2():
-    images = screen_grabber.loot_images()
-    processed_images = [
-        imageprocessor.black_text_white_background(image) for image in images
-    ]
-    loots = [single_line_image_to_str(image) for image in processed_images]
-    for loot in loots:
-        if loot == "":
-            return ""
-    return [int(loot) for loot in loots]
+# def recognize_loot2():
+#     images = screen_grabber.loot_images()
+#     processed_images = [
+#         imageprocessor.black_text_white_background(image) for image in images
+#     ]
+#     loots = [single_line_image_to_str(image) for image in processed_images]
+#     for loot in loots:
+#         if loot == "":
+#             return ""
+#     return [int(loot) for loot in loots]
 
 
-def single_line_image_to_str(image, threshold=75):
-    tokens = []
-    with PyTessBaseAPI(psm=PSM.SINGLE_LINE, path=tesseract_path) as api:
-        api.SetImage(image)
-        api.SetVariable("tessedit_char_whitelist", "0123456789")
-        api.Recognize()
-        ri = api.GetIterator()
-        level = RIL.SYMBOL
-        for r in iterate_level(ri, level):
-            try:
-                symbol = r.GetUTF8Text(level)
-            except Exception as e:
-                print("Error occurred:", str(e))
-                symbol = ""
-            confidence = r.Confidence(level)
-            if symbol and confidence >= threshold:
-                tokens.append(symbol)
-    joined_tokens = "".join(tokens)
-    # print("Recognized:", joined_tokens)
-    # image.show()
-    return joined_tokens
+# def single_line_image_to_str(image, threshold=75):
+#     tokens = []
+#     with PyTessBaseAPI(psm=PSM.SINGLE_LINE, path=tesseract_path) as api:
+#         api.SetImage(image)
+#         api.SetVariable("tessedit_char_whitelist", "0123456789")
+#         api.Recognize()
+#         ri = api.GetIterator()
+#         level = RIL.SYMBOL
+#         for r in iterate_level(ri, level):
+#             try:
+#                 symbol = r.GetUTF8Text(level)
+#             except Exception as e:
+#                 print("Error occurred:", str(e))
+#                 symbol = ""
+#             confidence = r.Confidence(level)
+#             if symbol and confidence >= threshold:
+#                 tokens.append(symbol)
+#     joined_tokens = "".join(tokens)
+#     # print("Recognized:", joined_tokens)
+#     # image.show()
+#     return joined_tokens

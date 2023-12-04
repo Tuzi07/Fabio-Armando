@@ -5,3 +5,4 @@ database/
 recognizer_fails/
 .vscode/
 screenshot.png
+.DS_Store
