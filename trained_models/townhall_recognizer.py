@@ -37,9 +37,8 @@ def is_townhall_snipable():
                 y_center = (ymax + ymin) / 2 / 1440
                 distance = distance_from_center(x_center, y_center)
 
-                if distance > 0.19:
+                if distance > 0.21:  # 0.15 is decent, 0.21 is more certain
                     print(distance)
-                # if distance > 0.15:
                     return True
 
     return False
