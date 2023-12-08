@@ -1,10 +1,10 @@
 next_button = (2740, 1030)
 
-loot = (279, 175, 229, 214)
+loot = (279, 197, 229, 214)
 
-noise_width_range = (4, 33)
-noise_height_range = (21, 37)
-noise_component_size_range = (194, 739)
+noise_width_range = (8, 33)
+noise_height_range = (25, 30)
+noise_component_size_range = (194, 650)
 
 # gold = (279, 175, 229, 64)
 # elixir = (279, 250, 229, 64)
