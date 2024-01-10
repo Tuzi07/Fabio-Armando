@@ -1,6 +1,16 @@
 # Fábio Armando
 
-## Tesseract
+Trained models to extract key information of enemy bases in a certain game.
+
+Demo of OCR model extracting the amount of loot available in a base:
+
+https://github.com/Tuzi07/Fabio-Armando/assets/37273687/60fe6fe5-f6fe-4488-aa47-9f0b9c7d8541
+
+Demo of object detection of the Inferno Tower structure:
+
+https://github.com/Tuzi07/Fabio-Armando/assets/37273687/ca04d3fb-3e6c-4b18-9d38-8cc003477d21
+
+## Install Tesseract
 
 On Linux:
 ```
@@ -18,13 +28,13 @@ Normally located at:
 - Windows: `C:\Program Files\Tesseract-OCR\tessdata`
 - Mac: `/opt/homebrew/Cellar/tesseract/5.3.3/share/tessdata/`
 
-## ADB
+## Install ADB
 
 On Mac, run `brew install android-platform-tools`.
 
-## Python Packages
+## Install Python Packages
 
-Install the following packages using `pip`
+Install the following packages using `pip`:
 
 ```
 pytesseract
